@@ -1,0 +1,61 @@
+import React from "react";
+import "./App.css";
+import {useState} from "react";
+import axios from "axios";
+
+function App() {
+  const[originalurl,setOriginalUrl] = useState("");
+  const[shorturl,setShortUrl] = useState(null);
+  
+  const handleSubmit = async(e) =>{
+    e.preventDefault()
+
+    try{
+      const response = await axios.post(`http://localhost:3000/`,{
+        original_url : originalurl
+      })
+      setShortUrl(response.data.shorturl);
+      setOriginalUrl("")
+    }catch(error){
+      console.log(error);
+    }
+  }
+
+  
+
+
+
+  return (
+    <div className="container">
+      <div className="card">
+        <h1 className="title-text">ShortyRL</h1>
+
+        <form onSubmit={handleSubmit}>
+          <div className="url-placeholder">
+            <input
+              type="text"
+              placeholder="paste your url ;)"
+              value = {originalurl}
+              onChange={(e) => setOriginalUrl(e.target.value)}
+            />
+          </div>
+          
+            <button className = "submit-button " type="submit">submit</button>
+          
+        </form>
+        {shorturl && (
+        <div className="shorturl yellowbox">
+         <a href ={shorturl} target="_blank" rel="noreferrer">{shorturl}</a>
+        </div>)}
+
+        <p className="description">
+          Short links. Big impact. Turn any long, ugly URL into something
+          clean, fast, and shareable — in one click.
+        </p>
+
+      </div>
+    </div>
+  );
+}
+
+export default App;
