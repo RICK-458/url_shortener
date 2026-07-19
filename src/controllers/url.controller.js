@@ -10,7 +10,7 @@ import {
 export async function createShortUrlController(req, res) {
   try {
     const { original_url, custom_code, exp_at } = req.body;
-    const result = await createShortUrl(original_url, custom_code, exp_at);
+    const result = await createShortUrl(original_url, custom_code, exp_at, req.user.id);
     res.json(result);
   } catch (err) {
     res.status(err.status || 500).json({
@@ -22,7 +22,7 @@ export async function createShortUrlController(req, res) {
 
 export async function getAllUrlsController(req, res) {
   try {
-    const result = await getAllUrls();
+    const result = await getAllUrls(req.user.id);
     res.json(result);
   } catch (err) {
     res.status(err.status || 500).json({
@@ -46,7 +46,7 @@ export async function redirectToOriginalController(req, res) {
 
 export async function getUrlDetailsController(req, res) {
   try {
-    const result = await getUrlDetails(req.params.code);
+    const result = await getUrlDetails(req.params.code, req.user.id);
     res.json(result);
   } catch (err) {
     res.status(err.status || 500).json({
@@ -58,7 +58,7 @@ export async function getUrlDetailsController(req, res) {
 
 export async function deleteUrlController(req, res) {
   try {
-    const result = await deleteUrl(req.params.code);
+    const result = await deleteUrl(req.params.code, req.user.id);
     res.json(result);
   } catch (err) {
     res.status(err.status || 500).json({
@@ -70,7 +70,7 @@ export async function deleteUrlController(req, res) {
 
 export async function updateExpiryController(req, res) {
   try {
-    const result = await updateExpiry(req.params.code, req.body.exp_date);
+    const result = await updateExpiry(req.params.code, req.body.exp_date, req.user.id);
     res.json(result);
   } catch (err) {
     res.status(err.status || 500).json({
