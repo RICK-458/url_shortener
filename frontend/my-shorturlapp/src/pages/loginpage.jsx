@@ -1,5 +1,5 @@
 import React from "react";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../App.css";
@@ -11,7 +11,6 @@ function Loginpage() {
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const navigate = useNavigate();
-  const googleButton = useRef(null);
 
   const finishLogin = (data) => {
     localStorage.setItem("token", data.token);
@@ -41,39 +40,6 @@ function Loginpage() {
       setErrorMsg(error.response?.data?.message || "something went wrong");
     }
   };
-
-  useEffect(() => {
-    const setupGoogleButton = () => {
-      window.google.accounts.id.initialize({
-        client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-        callback: async (response) => {
-          try {
-            const res = await axios.post("http://localhost:3000/auth/google", {
-              credential: response.credential,
-            });
-            finishLogin(res.data);
-          } catch (error) {
-            setErrorMsg(error.response?.data?.message || "google login failed");
-          }
-        },
-      });
-      window.google.accounts.id.renderButton(googleButton.current, {
-        theme: "outline",
-        size: "large",
-        width: 250,
-      });
-    };
-
-    if (window.google) {
-      setupGoogleButton();
-    } else {
-      const script = document.createElement("script");
-      script.src = "https://accounts.google.com/gsi/client";
-      script.async = true;
-      script.onload = setupGoogleButton;
-      document.body.appendChild(script);
-    }
-  }, []);
 
   return (
     <div className="container">
@@ -113,9 +79,6 @@ function Loginpage() {
         </form>
 
         {errorMsg && <p className="error-text">{errorMsg}</p>}
-
-        <p className="description">or</p>
-        <div ref={googleButton}></div>
 
         <p className="description">
           {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}

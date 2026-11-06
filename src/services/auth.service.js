@@ -1,9 +1,6 @@
 import db from "../config/db.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { OAuth2Client } from "google-auth-library";
-
-const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 function makeToken(user_id) {
   return jwt.sign({ id: user_id }, process.env.JWT_SECRET, { expiresIn: "7d" });
@@ -62,58 +59,4 @@ export async function login(email, password) {
     token: makeToken(user.id),
     user: { id: user.id, username: user.username, email: user.email },
   };
-}
-
-export async function googleLogin(credential) {
-  if (!credential) {
-    throw { status: 400, error: "Bad request", message: "google credential is required" };
-  }
-
-  let payload;
-  try {
-    const ticket = await googleClient.verifyIdToken({
-      idToken: credential,
-      audience: process.env.GOOGLE_CLIENT_ID,
-    });
-    payload = ticket.getPayload();
-  } catch (err) {
-    throw { status: 401, error: "Unauthorized", message: "invalid google token" };
-  }
-
-  // without this, someone could make a google account with YOUR email (unverified)
-  // and get linked into your account below
-  if (!payload.email_verified) {
-    throw { status: 401, error: "Unauthorized", message: "google email is not verified" };
-  }
-
-  const google_id = payload.sub;
-  const email = payload.email;
-  const username = payload.name || email.split("@")[0];
-
-  // logged in with google before?
-  let result = await db.query(
-    "SELECT id, username, email FROM users WHERE google_id = $1",
-    [google_id]
-  );
-  let user = result.rows[0];
-
-  // signed up with email/password before? attach google to that account
-  if (!user) {
-    result = await db.query(
-      "UPDATE users SET google_id = $1 WHERE email = $2 RETURNING id, username, email",
-      [google_id, email]
-    );
-    user = result.rows[0];
-  }
-
-  // first time here, make a new account
-  if (!user) {
-    result = await db.query(
-      "INSERT INTO users (username, email, google_id) VALUES ($1, $2, $3) RETURNING id, username, email",
-      [username, email, google_id]
-    );
-    user = result.rows[0];
-  }
-
-  return { token: makeToken(user.id), user: user };
 }

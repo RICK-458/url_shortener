@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { authenticate } from "../middleware/auth.middleware.js";
+import { createUrlLimiter } from "../middleware/rateLimit.middleware.js";
 import {
   createShortUrlController,
   getAllUrlsController,
@@ -11,7 +12,7 @@ import {
 
 const router = Router();
 
-router.post("/", authenticate, createShortUrlController);
+router.post("/", createUrlLimiter, authenticate, createShortUrlController);
 router.get("/urls", authenticate, getAllUrlsController);
 router.get("/urls/:code", authenticate, getUrlDetailsController);
 router.delete("/urls/:code", authenticate, deleteUrlController);

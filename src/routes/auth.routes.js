@@ -2,13 +2,12 @@ import { Router } from "express";
 import {
   signupController,
   loginController,
-  googleLoginController,
 } from "../controllers/auth.controller.js";
+import { loginLimiter, signupLimiter } from "../middleware/rateLimit.middleware.js";
 
 const router = Router();
 
-router.post("/signup", signupController);
-router.post("/login", loginController);
-router.post("/google", googleLoginController);
+router.post("/signup", signupLimiter, signupController);
+router.post("/login", loginLimiter, loginController);
 
 export default router;

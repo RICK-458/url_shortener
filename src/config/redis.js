@@ -11,8 +11,15 @@ redis.on("error", (err) => {
   console.error("redis error:", err.message);
 });
 
-redis.connect().catch((err) => {
+const connecting = redis.connect().catch((err) => {
   console.error("could not connect to redis:", err.message);
 });
+
+// give redis up to 1 second to connect, so the rate limiter has it ready at startup.
+// if redis is down, the server still starts and keeps trying to connect in the background
+await Promise.race([
+  connecting,
+  new Promise((resolve) => setTimeout(resolve, 1000)),
+]);
 
 export default redis;
