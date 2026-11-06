@@ -8,7 +8,7 @@ export async function signupController(req, res) {
   } catch (err) {
     res.status(err.status || 500).json({
       error: err.error || "server error",
-      message: err.message || "something went wrong",
+      message: err.status ? err.message : "something went wrong",
     });
   }
 }
@@ -21,7 +21,7 @@ export async function loginController(req, res) {
   } catch (err) {
     res.status(err.status || 500).json({
       error: err.error || "server error",
-      message: err.message || "something went wrong",
+      message: err.status ? err.message : "something went wrong",
     });
   }
 }
@@ -33,7 +33,7 @@ export async function googleLoginController(req, res) {
   } catch (err) {
     res.status(err.status || 500).json({
       error: err.error || "server error",
-      message: err.message || "something went wrong",
+      message: err.status ? err.message : "something went wrong",
     });
   }
 }

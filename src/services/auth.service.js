@@ -14,6 +14,10 @@ export async function signup(username, email, password) {
     throw { status: 400, error: "Bad request", message: "username, email and password are required" };
   }
 
+  if (password.length < 8) {
+    throw { status: 400, error: "Bad request", message: "password must be at least 8 characters" };
+  }
+
   const password_hash = await bcrypt.hash(password, 10);
 
   let result;
@@ -74,6 +78,12 @@ export async function googleLogin(credential) {
     payload = ticket.getPayload();
   } catch (err) {
     throw { status: 401, error: "Unauthorized", message: "invalid google token" };
+  }
+
+  // without this, someone could make a google account with YOUR email (unverified)
+  // and get linked into your account below
+  if (!payload.email_verified) {
+    throw { status: 401, error: "Unauthorized", message: "google email is not verified" };
   }
 
   const google_id = payload.sub;

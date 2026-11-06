@@ -15,7 +15,7 @@ export async function createShortUrlController(req, res) {
   } catch (err) {
     res.status(err.status || 500).json({
       error: err.error || "server error",
-      message: err.message || "something went wrong",
+      message: err.status ? err.message : "something went wrong",
     });
   }
 }
@@ -27,7 +27,7 @@ export async function getAllUrlsController(req, res) {
   } catch (err) {
     res.status(err.status || 500).json({
       error: err.error || "server error",
-      message: err.message || "something went wrong",
+      message: err.status ? err.message : "something went wrong",
     });
   }
 }
@@ -39,7 +39,7 @@ export async function redirectToOriginalController(req, res) {
   } catch (err) {
     res.status(err.status || 500).json({
       error: err.error || "server error",
-      message: err.message || "something went wrong",
+      message: err.status ? err.message : "something went wrong",
     });
   }
 }
@@ -51,7 +51,7 @@ export async function getUrlDetailsController(req, res) {
   } catch (err) {
     res.status(err.status || 500).json({
       error: err.error || "server error",
-      message: err.message || "something went wrong",
+      message: err.status ? err.message : "something went wrong",
     });
   }
 }
@@ -63,7 +63,7 @@ export async function deleteUrlController(req, res) {
   } catch (err) {
     res.status(err.status || 500).json({
       error: err.error || "server error",
-      message: err.message || "something went wrong",
+      message: err.status ? err.message : "something went wrong",
     });
   }
 }
@@ -75,7 +75,7 @@ export async function updateExpiryController(req, res) {
   } catch (err) {
     res.status(err.status || 500).json({
       error: err.error || "server error",
-      message: err.message || "something went wrong",
+      message: err.status ? err.message : "something went wrong",
     });
   }
 }

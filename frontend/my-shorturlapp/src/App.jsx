@@ -7,6 +7,7 @@ import axios from "axios";
 function App() {
   const [originalurl, setOriginalUrl] = useState("");
   const [shorturl, setShortUrl] = useState(null);
+  const [errorMsg, setErrorMsg] = useState("");
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
@@ -18,6 +19,12 @@ function App() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrorMsg("");
+
+    if (!originalurl.trim()) {
+      setErrorMsg("please enter a url");
+      return;
+    }
 
     try {
       const response = await axios.post(
@@ -32,7 +39,8 @@ function App() {
         localStorage.removeItem("token");
         navigate("/login");
       }
-      console.log(error);
+      setShortUrl(null);
+      setErrorMsg(error.response?.data?.message || "something went wrong");
     }
   };
 
@@ -58,6 +66,7 @@ function App() {
 
           <button className="submit-button " type="submit">submit</button>
         </form>
+        {errorMsg && <p className="error-text">{errorMsg}</p>}
         {shorturl && (
           <div className="shorturl yellowbox">
             <a href={shorturl} target="_blank" rel="noreferrer">{shorturl}</a>
